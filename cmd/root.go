@@ -36,11 +36,11 @@ func init() {
 	rootCMD.Flags().StringVarP(&conf.URL, "url", "u", "", "URL to start crawling")
 	rootCMD.Flags().StringVarP(&conf.OutputFilename, "write", "w", "wordlist.txt", "filename to write the wordlist to. If no file is provided, print to stdout")
 	rootCMD.Flags().StringVarP(&conf.Proxy, "proxy", "p", "", "Proxy to use: http[s]://[user:pass@]proxy.example.com[:8080]")
-	rootCMD.Flags().String("auth-type", "", "")
-	rootCMD.Flags().String("auth-user", "", "")
-	rootCMD.Flags().String("auth-pass", "", "")
+	//rootCMD.Flags().String("auth-type", "", "")
+	//rootCMD.Flags().String("auth-user", "", "")
+	//rootCMD.Flags().String("auth-pass", "", "")
 
-	rootCMD.Flags().StringArray("headers", []string{}, "")
+	//rootCMD.Flags().StringArray("headers", []string{}, "")
 	rootCMD.Flags().StringArrayVarP(&conf.Domains, "allow", "A", []string{}, "Domains in scope for the crawler. Provide as comma sperated list.")
 
 	rootCMD.MarkFlagRequired("url")
