@@ -71,6 +71,7 @@ type Config struct {
 	Quiet             bool
 	Domains           []string
 	Offsite           bool
+	ShowCount         bool
 }
 
 func Crawl(config *Config) {
