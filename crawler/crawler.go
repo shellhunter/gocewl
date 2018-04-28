@@ -38,6 +38,8 @@ func prepareSignalHandler() {}
 func sortMap()              {}
 func printBanner()          {}
 func printConfig()          {}
+func writeResultsToFile()   {}
+func writeResultsToStdout() {}
 
 type Stats struct {
 	RequestCount  int
@@ -49,11 +51,11 @@ type Stats struct {
 
 func (s *Stats) String() string {
 	return fmt.Sprintf(`
-		Total requests: %d
-		Total responses: %d
-		Total Errors: %d
-		Total Words: %d
-		Total Time: %d`, s.RequestCount, s.ResponseCount, s.ErrorCount, s.TotalWords, s.TotalTime)
+Total requests: %d
+Total responses: %d
+Total Errors: %d
+Total Words: %d
+Total Time: %d`, s.RequestCount, s.ResponseCount, s.ErrorCount, s.TotalWords, s.TotalTime)
 }
 
 type Config struct {
@@ -172,7 +174,7 @@ func Crawl(config *Config) {
 		word := key.(string)
 		count := value.(int)
 		if count >= config.MinimumWordCount {
-			fmt.Printf("%d\t%s\n", count, word)
+			fmt.Printf("%s\n", word)
 			_, err := fh.WriteString(word + "\n")
 			if err != nil {
 				log.Fatal(err)
@@ -180,5 +182,5 @@ func Crawl(config *Config) {
 		}
 		return true
 	})
-	fmt.Println(stats)
+	fmt.Println(stats.String())
 }
