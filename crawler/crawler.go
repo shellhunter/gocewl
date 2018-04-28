@@ -55,7 +55,7 @@ Total requests: %d
 Total responses: %d
 Total Errors: %d
 Total Words: %d
-Total Time: %d`, s.RequestCount, s.ResponseCount, s.ErrorCount, s.TotalWords, s.TotalTime)
+Total Time: %ds`, s.RequestCount, s.ResponseCount, s.ErrorCount, s.TotalWords, s.TotalTime)
 }
 
 type Config struct {
