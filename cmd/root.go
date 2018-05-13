@@ -10,11 +10,12 @@ import (
 )
 
 var rootCMD = cobra.Command{
-	Use:     "gocewl",
+	Use:     "gocewl URL",
 	Short:   "gocewl",
 	Long:    `gocewl is a commandline tool to generate custom wordlists by crawling webpages. It is based on CewL by digininja.`,
 	Version: "0.1",
 	Run:     startCrawling,
+	Args:    cobra.ExactArgs(1),
 }
 
 var conf cwl.Config
@@ -43,14 +44,12 @@ func init() {
 
 	//rootCMD.Flags().StringArray("headers", []string{}, "")
 	rootCMD.Flags().StringArrayVarP(&conf.Domains, "allow", "A", []string{}, "Domains in scope for the crawler. Provide as comma sperated list.")
-
-	rootCMD.MarkFlagRequired("url")
 }
 
 func startCrawling(cmd *cobra.Command, args []string) {
 	// print config
 
-	conf.URL = cmd.Flags().Lookup("url").Value.String()
+	conf.URL = args[0]
 
 	fmt.Println("url: " + conf.URL)
 	// verify url scheme

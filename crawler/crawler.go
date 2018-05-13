@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	query "github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
@@ -40,13 +41,45 @@ func printBanner()          {}
 func printConfig()          {}
 func writeResultsToFile()   {}
 func writeResultsToStdout() {}
+func resultsHandler()       {}
+
+type WordMap struct {
+	mu       sync.RWMutex
+	internal map[string]int
+}
+
+func (w *WordMap) Add(word string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	if _, ok := w.internal[word]; ok {
+		w.internal[word]++
+	} else {
+		w.internal[word] = 1
+	}
+
+}
+
+func (w *WordMap) Sort() {
+	// Implement clever solution
+	w.mu.Lock()
+	defer w.mu.Unlock()
+
+	return
+}
+
+func NewWordMap() *WordMap {
+	return &WordMap{
+		internal: make(map[string]int),
+	}
+}
 
 type Stats struct {
 	RequestCount  int
 	ResponseCount int
 	ErrorCount    int
 	TotalWords    int
-	TotalTime     int
+	TotalTime     float64
 }
 
 func (s *Stats) String() string {
@@ -55,7 +88,7 @@ Total requests: %d
 Total responses: %d
 Total Errors: %d
 Total Words: %d
-Total Time: %ds`, s.RequestCount, s.ResponseCount, s.ErrorCount, s.TotalWords, s.TotalTime)
+Total Time: %.2fs`, s.RequestCount, s.ResponseCount, s.ErrorCount, s.TotalWords, s.TotalTime)
 }
 
 type Config struct {
@@ -78,7 +111,8 @@ type Config struct {
 
 func Crawl(config *Config) {
 	var stats Stats
-	wordsWithCount := sync.Map{}
+	var wordsWithCount = NewWordMap()
+	startTime := time.Now()
 
 	seedURL, err := url.Parse(config.URL)
 	if err != nil {
@@ -151,14 +185,7 @@ func Crawl(config *Config) {
 			if len(word) < config.MininumWordLength || len(word) > config.MaximumWordLength {
 				continue
 			}
-			c, ok := wordsWithCount.Load(word)
-			if ok {
-				count := c.(int)
-				count++
-				wordsWithCount.Store(word, count)
-			} else {
-				wordsWithCount.Store(word, 1)
-			}
+			wordsWithCount.Add(word)
 		}
 	})
 	crawler.Visit(seedURL.String())
@@ -170,17 +197,15 @@ func Crawl(config *Config) {
 	}
 	defer fh.Close()
 
-	wordsWithCount.Range(func(key, value interface{}) bool {
-		word := key.(string)
-		count := value.(int)
+	for word, count := range wordsWithCount.internal {
 		if count >= config.MinimumWordCount {
-			fmt.Printf("%s\n", word)
+			//fmt.Printf("%s\n", word)
 			_, err := fh.WriteString(word + "\n")
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
-		return true
-	})
+	}
+	stats.TotalTime = time.Since(startTime).Seconds()
 	fmt.Println(stats.String())
 }
