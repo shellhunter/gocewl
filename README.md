@@ -23,7 +23,7 @@ If you have Go installed, run `go get github.com/kevin-ott/gocewl`. This will do
 ## Usage
 Run `gocewl --help` to display the commandline options.
 
-`gocewl -u <url>` will crawl the specified URL with the default parameters. 
+`gocewl <url>` will crawl the specified URL with the default parameters. 
 
 ## Todos
 
