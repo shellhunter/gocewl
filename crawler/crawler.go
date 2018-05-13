@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	query "github.com/PuerkitoBio/goquery"
@@ -22,6 +24,7 @@ var (
 	newlineRegex  = regexp.MustCompile(`\n+`)       //one or more newlines
 	blankRegex    = regexp.MustCompile(`\s{2,}`)    //two or more spaces
 	notAlphaRegex = regexp.MustCompile("[^a-zA-Z]") // all non-alpha characters
+	kill          = false
 )
 
 func extractFromAttributes() []string { return nil }
@@ -35,8 +38,13 @@ func extractFromText(body []byte) []string {
 	words := strings.Split(text, " ")
 	return words
 }
-func prepareSignalHandler() {}
-func sortMap()              {}
+func prepareSignalHandler() {
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c
+	fmt.Println("Handling Keyboard interrupt.")
+	kill = true
+}
 func printBanner()          {}
 func printConfig()          {}
 func writeResultsToFile()   {}
@@ -75,10 +83,10 @@ func NewWordMap() *WordMap {
 }
 
 type Stats struct {
-	RequestCount  int
-	ResponseCount int
-	ErrorCount    int
-	TotalWords    int
+	RequestCount  uint64
+	ResponseCount uint64
+	ErrorCount    uint64
+	TotalWords    uint64
 	TotalTime     float64
 }
 
@@ -112,6 +120,9 @@ type Config struct {
 func Crawl(config *Config) {
 	var stats Stats
 	var wordsWithCount = NewWordMap()
+
+	go prepareSignalHandler()
+
 	startTime := time.Now()
 
 	seedURL, err := url.Parse(config.URL)
@@ -154,7 +165,7 @@ func Crawl(config *Config) {
 	// Callbacks
 
 	crawler.OnError(func(r *colly.Response, err error) {
-		stats.ErrorCount++
+		atomic.AddUint64(&stats.ErrorCount, 1)
 		fmt.Printf("[!] Request to URL %s failed. Reason: %s\n", r.Request.URL.String(), err.Error())
 	})
 
@@ -168,15 +179,15 @@ func Crawl(config *Config) {
 		e.Request.Visit(absLink)
 	})
 
-	crawler.OnRequest(func(_ *colly.Request) {
-		stats.RequestCount++
+	crawler.OnRequest(func(r *colly.Request) {
+		atomic.AddUint64(&stats.RequestCount, 1)
 	})
 
 	crawler.OnResponse(func(r *colly.Response) {
-		stats.ResponseCount++
+		atomic.AddUint64(&stats.ResponseCount, 1)
 
 		words := extractFromText(r.Body)
-		stats.TotalWords += len(words)
+		atomic.AddUint64(&stats.TotalWords, uint64(len(words)))
 		if !config.Quiet {
 			fmt.Printf("[%d] --> %s (%d)\n", r.StatusCode, r.Request.URL, len(words))
 		}
