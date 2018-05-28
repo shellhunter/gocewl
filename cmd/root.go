@@ -13,7 +13,7 @@ var rootCMD = cobra.Command{
 	Use:     "gocewl URL",
 	Short:   "gocewl",
 	Long:    `gocewl is a commandline tool to generate custom wordlists by crawling webpages. It is based on CewL by digininja.`,
-	Version: "0.1",
+	Version: "0.2",
 	Run:     startCrawling,
 	Args:    cobra.ExactArgs(1),
 }
