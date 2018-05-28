@@ -51,6 +51,7 @@ func startCrawling(cmd *cobra.Command, args []string) {
 
 	conf.URL = args[0]
 
+	// to be replaced with printConfig()
 	fmt.Println("url: " + conf.URL)
 	// verify url scheme
 	fmt.Println("depth: " + strconv.Itoa(conf.Depth))

@@ -2,15 +2,13 @@
 
 Clone of digininja's [CeWL](https://github.com/digininja/CeWL) written in Golang.
 
-**Note**: This repo is experimental. Cosider it pre-alpha. The api / cli can change at any time.
-
 - Crawl websites concurrently and extract words into a wordlist
 - Should be faster as the original CeWL, as requests and parsing are performed concurrently. 
 - static binary available, so no dependencies required
 - lower memory fooprint
 
-## Features
-- Crawl websites concurrently and extract words into a wordlist
+**Note**: This repo is experimental. Cosider it pre-alpha. The api / cli can change at any time.
+
 
 ## Installation
 
@@ -23,7 +21,10 @@ If you have Go installed, run `go get github.com/kevin-ott/gocewl`. This will do
 ## Usage
 Run `gocewl --help` to display the commandline options.
 
-`gocewl <url>` will crawl the specified URL with the default parameters. 
+## Examples
+Crawl https://en.wikipedia.org with default parameters.
+
+```gocewl <url>```
 
 ## Todos
 

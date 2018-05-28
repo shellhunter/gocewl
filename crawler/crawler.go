@@ -1,4 +1,4 @@
-package gocewl
+package crawler
 
 import (
 	"bytes"
@@ -11,7 +11,6 @@ import (
 	"os/signal"
 	"regexp"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"time"
 
@@ -24,7 +23,7 @@ var (
 	newlineRegex  = regexp.MustCompile(`\n+`)       //one or more newlines
 	blankRegex    = regexp.MustCompile(`\s{2,}`)    //two or more spaces
 	notAlphaRegex = regexp.MustCompile("[^a-zA-Z]") // all non-alpha characters
-	kill          = false
+	kill          = true
 )
 
 func extractFromAttributes() []string { return nil }
@@ -43,44 +42,13 @@ func prepareSignalHandler() {
 	signal.Notify(c, os.Interrupt)
 	<-c
 	fmt.Println("Handling Keyboard interrupt.")
-	kill = true
+	kill = false
 }
 func printBanner()          {}
 func printConfig()          {}
 func writeResultsToFile()   {}
 func writeResultsToStdout() {}
 func resultsHandler()       {}
-
-type WordMap struct {
-	mu       sync.RWMutex
-	internal map[string]int
-}
-
-func (w *WordMap) Add(word string) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-
-	if _, ok := w.internal[word]; ok {
-		w.internal[word]++
-	} else {
-		w.internal[word] = 1
-	}
-
-}
-
-func (w *WordMap) Sort() {
-	// Implement clever solution
-	w.mu.Lock()
-	defer w.mu.Unlock()
-
-	return
-}
-
-func NewWordMap() *WordMap {
-	return &WordMap{
-		internal: make(map[string]int),
-	}
-}
 
 type Stats struct {
 	RequestCount  uint64
@@ -120,9 +88,6 @@ type Config struct {
 func Crawl(config *Config) {
 	var stats Stats
 	var wordsWithCount = NewWordMap()
-
-	go prepareSignalHandler()
-
 	startTime := time.Now()
 
 	seedURL, err := url.Parse(config.URL)
@@ -181,6 +146,9 @@ func Crawl(config *Config) {
 
 	crawler.OnRequest(func(r *colly.Request) {
 		atomic.AddUint64(&stats.RequestCount, 1)
+		if kill == true {
+			r.Abort()
+		}
 	})
 
 	crawler.OnResponse(func(r *colly.Response) {
