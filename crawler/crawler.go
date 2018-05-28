@@ -87,7 +87,6 @@ type Config struct {
 
 func Crawl(config *Config) {
 	go prepareSignalHandler()
-	fmt.Println("Starting crawler")
 	var stats Stats
 	var wordsWithCount = NewWordMap()
 	startTime := time.Now()
@@ -173,8 +172,6 @@ func Crawl(config *Config) {
 			wordsWithCount.Add(word)
 		}
 	})
-	fmt.Println("before visit")
-	fmt.Println(seedURL.String())
 	if err := crawler.Visit(seedURL.String()); err != nil {
 		log.Fatal(err)
 	}
