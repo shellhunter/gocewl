@@ -23,7 +23,7 @@ var (
 	newlineRegex  = regexp.MustCompile(`\n+`)       //one or more newlines
 	blankRegex    = regexp.MustCompile(`\s{2,}`)    //two or more spaces
 	notAlphaRegex = regexp.MustCompile("[^a-zA-Z]") // all non-alpha characters
-	kill          = true
+	kill          = false
 )
 
 func extractFromAttributes() []string { return nil }
@@ -86,6 +86,7 @@ type Config struct {
 }
 
 func Crawl(config *Config) {
+	fmt.Println("Starting crawler")
 	var stats Stats
 	var wordsWithCount = NewWordMap()
 	startTime := time.Now()
@@ -125,6 +126,8 @@ func Crawl(config *Config) {
 	if len(config.Domains) > 0 {
 		crawler.AllowedDomains = append(crawler.AllowedDomains, seedURL.Host)
 		crawler.AllowedDomains = append(crawler.AllowedDomains, config.Domains...)
+	} else {
+		crawler.AllowedDomains = append(crawler.AllowedDomains, seedURL.Host)
 	}
 
 	// Callbacks
@@ -167,7 +170,11 @@ func Crawl(config *Config) {
 			wordsWithCount.Add(word)
 		}
 	})
-	crawler.Visit(seedURL.String())
+	fmt.Println("before visit")
+	fmt.Println(seedURL.String())
+	if err := crawler.Visit(seedURL.String()); err != nil {
+		log.Fatal(err)
+	}
 	crawler.Wait()
 
 	fh, err := os.Create(config.OutputFilename)

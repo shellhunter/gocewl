@@ -48,8 +48,10 @@ Flags:
 
 ## Examples
 Crawl https://en.wikipedia.org with default parameters.
+```gocewl https://en.wikipedia.org```
 
-```gocewl <url>```
+Crawl https://en.wikipedia.org with depth of 2, 10 threads and write the output to wiki.txt
+```gocewl -d 2 -t 10 -w wiki.txt https://en.wikipedia.org```
 
 ## Todos
 
