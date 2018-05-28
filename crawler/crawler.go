@@ -42,7 +42,7 @@ func prepareSignalHandler() {
 	signal.Notify(c, os.Interrupt)
 	<-c
 	fmt.Println("Handling Keyboard interrupt.")
-	kill = false
+	kill = true
 }
 func printBanner()          {}
 func printConfig()          {}
@@ -86,6 +86,7 @@ type Config struct {
 }
 
 func Crawl(config *Config) {
+	go prepareSignalHandler()
 	fmt.Println("Starting crawler")
 	var stats Stats
 	var wordsWithCount = NewWordMap()
