@@ -135,7 +135,9 @@ func Crawl(config *Config) {
 
 	crawler.OnError(func(r *colly.Response, err error) {
 		atomic.AddUint64(&stats.ErrorCount, 1)
-		fmt.Printf("[!] Request to URL %s failed. Reason: %s\n", r.Request.URL.String(), err.Error())
+		if !config.Quiet {
+			fmt.Printf("[!] Request to URL %s failed. Reason: %s\n", r.Request.URL.String(), err.Error())
+		}
 	})
 
 	crawler.OnHTML("a[href]", func(e *colly.HTMLElement) {

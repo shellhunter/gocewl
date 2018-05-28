@@ -23,7 +23,7 @@ var conf cwl.Config
 func init() {
 
 	rootCMD.Flags().BoolVarP(&conf.SkipSSL, "insecure", "k", false, "Ignore self-signed certificates")
-	rootCMD.Flags().BoolP("quiet", "q", false, "No output, except for words")
+	rootCMD.Flags().BoolVarP(&conf.Quiet, "quiet", "q", false, "No output, except for words")
 	rootCMD.Flags().BoolVarP(&conf.Offsite, "offsite", "O", false, "Allow the crawler to visit offsite domains")
 	//rootCMD.Flags().BoolVarP(&conf.ShowCount, "count", "c", "Show the count of each word found")
 
