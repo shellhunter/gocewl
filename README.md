@@ -16,7 +16,7 @@ Note: Currently there are no tagged releases or pre-compiled binaries. This will
 
 To compile and and install goCeWL, Go needs to be installed on your system. If that's not yet the case, please follow the installation instructions [here](https://golang.org/doc/install).
 
-If you have Go installed, run `go get github.com/kevin-ott/gocewl`. This will download all dependencies and install the binary to `$GOPATH/bin`. 
+If you have Go installed, run `go get github.com/shellhunter/gocewl`. This will download all dependencies and install the binary to `$GOPATH/bin`. 
 
 ## Usage
 Run `gocewl --help` to display the commandline options.
